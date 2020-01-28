@@ -1,33 +1,22 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"time"
 
-	handler "github.com/somen440/slim-go/src/application/handler/user"
-	model "github.com/somen440/slim-go/src/domain/user"
-	repository "github.com/somen440/slim-go/src/infrastructure/persistence/user"
-
-	"github.com/gorilla/mux"
+	"github.com/somen440/slim-go/app"
 )
 
 func main() {
-	r := mux.NewRouter()
+	var addr = flag.String("addr", ":8080", "application address")
+	flag.Parse()
 
-	repository := repository.NewInMemoryUserRepository([]*model.User{
-		model.NewUser(1, "hoge"),
-		model.NewUser(2, "foo"),
-		model.NewUser(3, "bar"),
-	})
-
-	usersRouter := r.PathPrefix("/users").Subrouter()
-	usersRouter.Handle("", handler.NewListUserHandler(repository))
-	usersRouter.Handle("/{id}", handler.NewViewUserHandler(repository))
-
+	log.Println("Web ", *addr)
 	srv := &http.Server{
-		Handler:      r,
-		Addr:         "127.0.0.1:8080",
+		Handler:      app.Routes(),
+		Addr:         *addr,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
