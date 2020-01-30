@@ -18,7 +18,7 @@ type TestJwtUser struct {
 
 var (
 	expectToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ7XCJpZFwiOjEyMyxcIm5hbWVcIjpcImhvZ2VcIixcImNyZWF0ZWRfYXRcIjpcIjAwMDEtMDEtMDFUMDA6MDA6MDBaXCJ9In0.cZBjTemxSE4bYwZWYRwiC5kQICe9li5QnOiKG5unpQ4"
-	secret      = []byte("key")
+	secret      = []byte("key") // need []byte
 )
 
 func createTestUser() *TestJwtUser {
@@ -34,6 +34,9 @@ func TestNewWithClaims(t *testing.T) {
 	userJSON, _ := json.Marshal(createTestUser())
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		Subject: string(userJSON),
+		// memo:
+		//   ExpiresAt: time.Unix,
+		//   ... etc
 	})
 
 	tokenString, err := token.SignedString(secret)

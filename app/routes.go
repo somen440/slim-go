@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/somen440/slim-go/src/application/middleware"
+
 	handler "github.com/somen440/slim-go/src/application/handler/user"
 	model "github.com/somen440/slim-go/src/domain/user"
 	repository "github.com/somen440/slim-go/src/infrastructure/persistence/user"
@@ -27,6 +29,18 @@ func Routes() *mux.Router {
 	usersRouter := r.PathPrefix("/users").Subrouter()
 	usersRouter.Handle("", handler.NewListUserHandler(repository))
 	usersRouter.Handle("/{id}", handler.NewViewUserHandler(repository))
+
+	r.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello World")
+	})
+
+	auth, err := middleware.NewAuthMiddleware()
+	if err != nil {
+		panic(err)
+	}
+	r.Use(
+		auth.Middleware,
+	)
 
 	return r
 }
